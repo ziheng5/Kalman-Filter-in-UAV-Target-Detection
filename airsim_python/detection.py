@@ -8,137 +8,137 @@ import time
 import cv2
 
 
-def yolo_cv(model_name='yolov8n.pt'):
-
-    """
-    ×××
-    获取前端摄像头图像并执行目标检测的函数，目前已为废案，可以用来调试
-    ×××
-    :param model_name: the model used to detect the objects
-    :return: None
-    """
-
-    # 初始化 YOLOv8 模型
-    model = YOLO(model_name)
-
-    client = airsim.MultirotorClient()
-    client.confirmConnection()
-    client.enableApiControl(True)
-    client.armDisarm(True)
-
-    # 设置图像类型（可以是Scene, Depth, Segmentation等）
-    image_type = airsim.ImageType.Scene
-
-    # 设置摄像头名称
-    camera_name = "front_center"
-
-    # 设置显示窗口
-    cv2.namedWindow("Drone FPV View", cv2.WINDOW_NORMAL)
-    cv2.resizeWindow("Drone FPV View", 1000, 600)
-
-    # FPS 计算变量
-    frame_count = 0
-    start_time = time.time()
-
-    try:
-        while True:
-            # 获取前端摄像头图像
-            responses = client.simGetImages([
-                # 不返回浮点数，不压缩
-                airsim.ImageRequest(camera_name=camera_name, image_type=image_type,
-                                    pixels_as_float=False, compress=False),
-            ])
-
-            response = responses[0]
-
-            # 处理场景图像
-            ## 将图像数据转为 numpy 数组
-            img1d = np.frombuffer(response.image_data_uint8, dtype=np.uint8)
-
-            ## 重塑数组为 3 通道图像
-            frame = img1d.reshape(response.height, response.width, 3)
-
-            ## 目标检测
-            results = model.predict(frame, classes=[2])
-
-            for result in results:
-                annotated_frame = result.plot()
-
-                # 计算并显示FPS
-                frame_count += 1
-                if frame_count >= 30:  # 每30帧计算一次FPS
-                    fps = frame_count / (time.time() - start_time)
-                    cv2.putText(annotated_frame, f"FPS: {fps:.2f}", (10, 30),
-                                cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-                    frame_count = 0
-                    start_time = time.time()
-
-                # 显示图像
-                cv2.imshow("Drone FPV View", annotated_frame)
-
-            if cv2.waitKey(1) & 0xFF == ord('q'):
-                break
-
-    finally:
-        client.armDisarm(False)
-        client.enableApiControl(False)
-        cv2.destroyAllWindows()
-
-
-def dep_image(min_d, max_d):
-    """
-    获取深度图的函数，主要用于调试，目前已成废案（
-
-    :param min_d: min depth
-    :param max_d: max depth
-    :return: None
-    """
-
-    AirSim_client = airsim.MultirotorClient()
-    AirSim_client.confirmConnection()
-    AirSim_client.enableApiControl(True)
-    AirSim_client.armDisarm(True)
-
-    # 设置图像类型（可以是Scene, Depth, Segmentation等）
-    image_type = airsim.ImageType.DepthPerspective
-
-    # 设置摄像头名称
-    camera_name = "front_center"
-
-    # 设置显示窗口
-    cv2.namedWindow("Drone FPV DEPTH View", cv2.WINDOW_NORMAL)
-    cv2.resizeWindow("Drone FPV DEPTH View", 1000, 600)
-
-    try:
-        while True:
-            responses = AirSim_client.simGetImages([
-                airsim.ImageRequest(camera_name=camera_name, image_type=airsim.ImageType.DepthPerspective,
-                                    pixels_as_float=True, compress=False)
-            ])
-
-            depth_response = responses[0]
-
-            # 1. 处理深度图像
-            depth_data = airsim.list_to_2d_float_array(depth_response.image_data_float,
-                                                       depth_response.width, depth_response.height)
-            # 截断有效范围（min_d ~ max_d）
-            valid_depth = np.clip(depth_data, min_d, max_d)  # 小于 min_d 设为 min_d，大于 max_d 设为 max_d
-
-            # 归一化
-            depth_normalized = (255- (valid_depth - min_d) / (max_d - min_d) * 255).astype(np.uint8)
-
-            # 2. **应用颜色映射（可选）**
-            # 方案1：黑白灰度图（推荐）
-            depth_visualized = cv2.cvtColor(depth_normalized, cv2.COLOR_GRAY2BGR)
-
-            cv2.imshow("Drone FPV DEPTH View", depth_visualized)
-
-            if cv2.waitKey(1) & 0xFF == ord('e'):
-                break
-
-    finally:
-        AirSim_client.armDisarm(False)
-        AirSim_client.enableApiControl(False)
+# def yolo_cv(model_name='yolov8n.pt'):
+#
+#     """
+#     ×××
+#     获取前端摄像头图像并执行目标检测的函数，目前已为废案，可以用来调试
+#     ×××
+#     :param model_name: the model used to detect the objects
+#     :return: None
+#     """
+#
+#     # 初始化 YOLOv8 模型
+#     model = YOLO(model_name)
+#
+#     client = airsim.MultirotorClient()
+#     client.confirmConnection()
+#     client.enableApiControl(True)
+#     client.armDisarm(True)
+#
+#     # 设置图像类型（可以是Scene, Depth, Segmentation等）
+#     image_type = airsim.ImageType.Scene
+#
+#     # 设置摄像头名称
+#     camera_name = "front_center"
+#
+#     # 设置显示窗口
+#     cv2.namedWindow("Drone FPV View", cv2.WINDOW_NORMAL)
+#     cv2.resizeWindow("Drone FPV View", 1000, 600)
+#
+#     # FPS 计算变量
+#     frame_count = 0
+#     start_time = time.time()
+#
+#     try:
+#         while True:
+#             # 获取前端摄像头图像
+#             responses = client.simGetImages([
+#                 # 不返回浮点数，不压缩
+#                 airsim.ImageRequest(camera_name=camera_name, image_type=image_type,
+#                                     pixels_as_float=False, compress=False),
+#             ])
+#
+#             response = responses[0]
+#
+#             # 处理场景图像
+#             ## 将图像数据转为 numpy 数组
+#             img1d = np.frombuffer(response.image_data_uint8, dtype=np.uint8)
+#
+#             ## 重塑数组为 3 通道图像
+#             frame = img1d.reshape(response.height, response.width, 3)
+#
+#             ## 目标检测
+#             results = model.predict(frame, classes=[2])
+#
+#             for result in results:
+#                 annotated_frame = result.plot()
+#
+#                 # 计算并显示FPS
+#                 frame_count += 1
+#                 if frame_count >= 30:  # 每30帧计算一次FPS
+#                     fps = frame_count / (time.time() - start_time)
+#                     cv2.putText(annotated_frame, f"FPS: {fps:.2f}", (10, 30),
+#                                 cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+#                     frame_count = 0
+#                     start_time = time.time()
+#
+#                 # 显示图像
+#                 cv2.imshow("Drone FPV View", annotated_frame)
+#
+#             if cv2.waitKey(1) & 0xFF == ord('q'):
+#                 break
+#
+#     finally:
+#         client.armDisarm(False)
+#         client.enableApiControl(False)
+#         cv2.destroyAllWindows()
+#
+#
+# def dep_image(min_d, max_d):
+#     """
+#     获取深度图的函数，主要用于调试，目前已成废案（
+#
+#     :param min_d: min depth
+#     :param max_d: max depth
+#     :return: None
+#     """
+#
+#     AirSim_client = airsim.MultirotorClient()
+#     AirSim_client.confirmConnection()
+#     AirSim_client.enableApiControl(True)
+#     AirSim_client.armDisarm(True)
+#
+#     # 设置图像类型（可以是Scene, Depth, Segmentation等）
+#     image_type = airsim.ImageType.DepthPerspective
+#
+#     # 设置摄像头名称
+#     camera_name = "front_center"
+#
+#     # 设置显示窗口
+#     cv2.namedWindow("Drone FPV DEPTH View", cv2.WINDOW_NORMAL)
+#     cv2.resizeWindow("Drone FPV DEPTH View", 1000, 600)
+#
+#     try:
+#         while True:
+#             responses = AirSim_client.simGetImages([
+#                 airsim.ImageRequest(camera_name=camera_name, image_type=airsim.ImageType.DepthPerspective,
+#                                     pixels_as_float=True, compress=False)
+#             ])
+#
+#             depth_response = responses[0]
+#
+#             # 1. 处理深度图像
+#             depth_data = airsim.list_to_2d_float_array(depth_response.image_data_float,
+#                                                        depth_response.width, depth_response.height)
+#             # 截断有效范围（min_d ~ max_d）
+#             valid_depth = np.clip(depth_data, min_d, max_d)  # 小于 min_d 设为 min_d，大于 max_d 设为 max_d
+#
+#             # 归一化
+#             depth_normalized = (255- (valid_depth - min_d) / (max_d - min_d) * 255).astype(np.uint8)
+#
+#             # 2. **应用颜色映射（可选）**
+#             # 方案1：黑白灰度图（推荐）
+#             depth_visualized = cv2.cvtColor(depth_normalized, cv2.COLOR_GRAY2BGR)
+#
+#             cv2.imshow("Drone FPV DEPTH View", depth_visualized)
+#
+#             if cv2.waitKey(1) & 0xFF == ord('e'):
+#                 break
+#
+#     finally:
+#         AirSim_client.armDisarm(False)
+#         AirSim_client.enableApiControl(False)
 
 
 def yolo_and_depth(disappear, shared_list, lock, model_name='yolov8n.pt', model_conf=0.25):
@@ -268,7 +268,7 @@ def yolo_and_depth(disappear, shared_list, lock, model_name='yolov8n.pt', model_
                             xyxy = np.array(box.xyxy[0].tolist(), dtype="float")
                             xyxy = xyxy//3
                             iou = cal_iou(xyxy, xywh_to_xyxy(X_posterior[0:4]))
-                            print(iou)
+                            # print(iou)
                             if iou > max_iou:
                                 times_of_disappearance = 0
                                 target_box = xyxy
@@ -397,6 +397,10 @@ def draw_vision(shared_list, show_depth, min_d, max_d, disappear, k):
 
     # 调整参数
     k_inv = np.linalg.inv(k)
+    f_x = k[0][0]
+    f_y = k[1][1]
+    c_x = k[0][2]
+    c_y = k[1][2]
 
     # Create the client
     client = airsim.MultirotorClient()
@@ -421,7 +425,6 @@ def draw_vision(shared_list, show_depth, min_d, max_d, disappear, k):
 
     try:
         while True:
-            # print(len(shared_list))
             # 获取摄像头状态信息
             camera_info = client.simGetCameraInfo(camera_name)
 
@@ -464,21 +467,32 @@ def draw_vision(shared_list, show_depth, min_d, max_d, disappear, k):
                     # 从目标信息池中获取最新的目标 bounding box 信息
 
                     x1, y1, x2, y2, depth_value, color = shared_list[-1]
+                    real_x1 = x1 * 3
+                    real_y1 = y1 * 3
+                    real_x2 = x2 * 3
+                    real_y2 = y2 * 3
 
-                    # 获取边界框中心坐标（之前在 yolo_and_depth 函数中计算过了，这里再计算，是否需要优化？）
-                    x_c, y_c = (x1 + x2) // 2, (y1 + y2) // 2
-                    center_vec = np.array([x_c, y_c, 1.])
+                    # ==============================================================
+                    # todo 施工中...
+                    # # 获取边界框中心坐标（之前在 yolo_and_depth 函数中计算过了，这里再计算，是否需要优化？）
+                    x_c, y_c = (real_x1 + real_x2) // 2, (real_y1 + real_y2) // 2
+                    center_vec = np.array([(x_c-c_x)/f_x, (y_c-c_y)/f_y, 1.])
 
-                    # 从像素坐标 [u, v] 反投影到相机归一化平面（去除内参影响）
-                    c = depth_value * k_inv @ center_vec
-                    c_ = np.array([c[0], c[1], depth_value, 1.0])
+                    # # 从像素坐标 [u, v] 反投影到相机归一化平面（去除内参影响）
+                    # c = depth_value * k_inv @ center_vec
+                    # c_ = np.array([c[0], c[1], depth_value, 1.0])
+                    #
+                    # # 获取机体的齐次变换矩阵
+                    # T = get_HomogeneousMatrix(client, camera_name, vehicle_name="Drone1")
+                    #
+                    # # 获取 3D 坐标
+                    # tar_distance = T @ c_
 
-                    # 获取机体的齐次变换矩阵
-                    T = get_HomogeneousMatrix(client, camera_name, vehicle_name="Drone1")
+                    normed_center_vec = center_vec / np.linalg.norm(center_vec)
+                    tar_distance = normed_center_vec * depth_value
 
-                    # 获取 3D 坐标
-                    tar_distance = T @ c_
 
+                    # ===============================================================
                     cv2.rectangle(depth_visualized, (x1, y1), (x2, y2), color, 2)
                     cv2.rectangle(frame_, (x1*3, y1*3), (x2*3, y2*3), color, 2)
 
@@ -533,20 +547,32 @@ def draw_vision(shared_list, show_depth, min_d, max_d, disappear, k):
                     # 如果目标依然存在，并且被检测到
                     x1, y1, x2, y2, depth_value, color = shared_list[-1]
 
+                    real_x1 = x1 * 3
+                    real_y1 = y1 * 3
+                    real_x2 = x2 * 3
+                    real_y2 = y2 * 3
+
+                    # ====================================================================
+                    # todo 施工中...
                     # 获取边界框中心坐标（之前在 yolo_and_depth 函数中计算过了，这里再计算，是否需要优化？）
-                    x_c, y_c = (x1 + x2) // 2, (y1 + y2) // 2
-                    center_vec = np.array([x_c, y_c, 1.])
+                    x_c, y_c = (real_x1 + real_x2) // 2, (real_y1 + real_y2) // 2
+                    center_vec = np.array([(x_c-c_x)/f_x, (y_c-c_y)/f_y, 1.])
 
-                    # 从像素坐标 [u, v] 反投影到相机归一化平面（去除内参影响）
-                    c = depth_value * k_inv @ center_vec
-                    c_ = np.array([c[0], c[1], depth_value, 1.0])
+                    # # 从像素坐标 [u, v] 反投影到相机归一化平面（去除内参影响）
+                    # c = depth_value * k_inv @ center_vec
+                    # c_ = np.array([c[0], c[1], depth_value, 1.0])
+                    #
+                    # # 获取机体的齐次变换矩阵
+                    # T = get_HomogeneousMatrix(client, camera_name, vehicle_name="Drone1")
+                    #
+                    # # 获取 3D 坐标
+                    # tar_distance = T @ c_
 
-                    # 获取机体的齐次变换矩阵
-                    T = get_HomogeneousMatrix(client, camera_name, vehicle_name="Drone1")
+                    normed_center_vec = center_vec / np.linalg.norm(center_vec)
+                    tar_distance = normed_center_vec * depth_value
 
-                    # 获取 3D 坐标
-                    tar_distance = T @ c_
 
+                    # ======================================================================
                     cv2.putText(frame_,
                                 f'x_d: {tar_distance[0]:.3f} y_d: {tar_distance[1]:.3f} z_d: {tar_distance[2]:.3f}',
                                 (30, 90),
