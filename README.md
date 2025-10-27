@@ -7,6 +7,10 @@
 
 （目前仅做了**汽车**的目标检测）
 
+- 参考论文：https://arxiv.org/html/2410.10409v1#abstract
+- Kalman Filter 的实现部分参考了项目：
+
+
 ## 食用指南
 
 本仓库为 `private` 仓库，仅供内部成员更新项目源码与文件
