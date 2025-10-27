@@ -1,9 +1,9 @@
 # Kalman-Filter-in-UAV-Target-Detection
-利用 Kalman Filter 与 YOLOv8s 实现目标稳健实时检测
+利用 Kalman Filter 与 YOLOv8s 实现目标稳健实时检测与状态估计
 
 本项目基于 Unreal Engine 4.27 的 AirSim 插件，并调用 AirSim 的 Python API 实现
 
-> 实际问题：实时检测过程中，较大的目标检测模型难以做到每一帧都及时检测，过小的目标检测模型又无法实现较高的精度，于是尝试采用 Kalman Filter 来增强 YOLOv8s 的目标检测实时性
+> 实际问题：目标实时检测与状态估计过程中，较大的目标检测模型难以做到每一帧都及时检测，过小的目标检测模型又无法实现较高的精度，于是尝试采用 Kalman Filter 来增强 YOLOv8s 的目标检测与状态估计的实时性
 
 （目前仅做了**汽车**的目标检测）
 
