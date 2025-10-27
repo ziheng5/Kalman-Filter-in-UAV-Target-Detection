@@ -9,7 +9,7 @@
 
 - 参考论文：https://arxiv.org/html/2410.10409v1#abstract
 - Kalman Filter 的实现部分参考了项目：https://github.com/liuchangji/kalman-filter-in-single-object-tracking
-
+- 仿真效果视频已上传至 BiliBili：https://www.bilibili.com/video/BV1f7smzkEti/
 
 ## 食用指南
 
