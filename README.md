@@ -11,6 +11,8 @@
 - Kalman Filter 的实现部分参考了项目：https://github.com/liuchangji/kalman-filter-in-single-object-tracking
 - 仿真效果视频已上传至 BiliBili：https://www.bilibili.com/video/BV1f7smzkEti/
 
+![predict](./predict.png)
+
 ## 食用指南
 
 本仓库为 `private` 仓库，仅供内部成员更新项目源码与文件
